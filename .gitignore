@@ -1,3 +1,5 @@
 secret.json
 node_modules
 *.jpg
+.vscode
+.DS_Store
