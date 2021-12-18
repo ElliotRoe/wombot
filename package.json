@@ -20,7 +20,10 @@
   },
   "homepage": "https://github.com/adri326/wombot#readme",
   "dependencies": {
-    "mkdirp": "^1.0.4"
+    "fs-extra": "^10.0.0",
+    "mkdirp": "^1.0.4",
+    "printf": "^0.6.1",
+    "sharp": "^0.29.3"
   },
   "devDependencies": {
     "@discordjs/rest": "^0.1.0-canary.0",

@@ -1,0 +1,8 @@
+{
+    "promptArr":[
+        ["Father", "Loving", "Strong"],
+        ["Caring", "Intelligent", "Hug"]
+    ],
+    "style": 8,
+    "outputFolderPath": "./generated_collages/dad"
+}

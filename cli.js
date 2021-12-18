@@ -1,65 +1,64 @@
 const task = require("./index.js");
 const styles = require("./styles.js");
-const yargs = require("yargs");
+
 const { hideBin } = require('yargs/helpers');
 
-const argc = yargs(hideBin(process.argv))
-    .scriptName("wombot")
-    .usage(
-        "\"$0 <prompt> [style] [--times N]\"; where \"style\" can be a number between 1 and 12 (default 3):\n"
-        + [...styles].map(([id, name]) => id + " -> " + name).join("\n")
-    )
-    .positional("prompt", {
-        type: "string",
-        describe: "The prompt used by the AI to generate an image"
-    })
-    .positional("style", {
-        type: "number",
-        default: 3,
-        describe: "The style of the AI: chooses a collection of (presumed) GANs chained together, yielding different \"styles\""
-    })
-    .option("times", {
-        type: "number",
-        default: 1,
-        describe: "The number of times to request an image; setting this to a number higher than 10 will cause issues with the built-in ratelimiter!"
-    })
-    .option("quiet", {
-        type: "boolean",
-        default: false,
-        describe: "Silences most of the output, only printing the paths of the downloaded files.",
-    })
-    .option("inter", {
-        type: "boolean",
-        default: false,
-        describe: "When set, downloads the intermediary results as well."
-    })
-    .option("nofinal", {
-        type: "boolean",
-        default: false,
-        describe: "When set, disables the download of the final image. Instead, its url is printed."
-    })
-    .alias("h", "help")
-    .parse();
+// const argc = yargs(hideBin(process.argv))
+//     .scriptName("wombot")
+//     .usage(
+//         "\"$0 <prompt> [style] [--times N]\"; where \"style\" can be a number between 1 and 12 (default 3):\n"
+//         + [...styles].map(([id, name]) => id + " -> " + name).join("\n")
+//     )
+//     .positional("prompt", {
+//         type: "string",
+//         describe: "The prompt used by the AI to generate an image"
+//     })
+//     .positional("style", {
+//         type: "number",
+//         default: 3,
+//         describe: "The style of the AI: chooses a collection of (presumed) GANs chained together, yielding different \"styles\""
+//     })
+//     .option("times", {
+//         type: "number",
+//         default: 1,
+//         describe: "The number of times to request an image; setting this to a number higher than 10 will cause issues with the built-in ratelimiter!"
+//     })
+//     .option("quiet", {
+//         type: "boolean",
+//         default: false,
+//         describe: "Silences most of the output, only printing the paths of the downloaded files.",
+//     })
+//     .option("inter", {
+//         type: "boolean",
+//         default: false,
+//         describe: "When set, downloads the intermediary results as well."
+//     })
+//     .option("nofinal", {
+//         type: "boolean",
+//         default: false,
+//         describe: "When set, disables the download of the final image. Instead, its url is printed."
+//     })
+//     .alias("h", "help")
+//     .parse();
 
-if (!styles.has(+argc._[1])) {
-    console.error("Invalid style: expected a number between 1 and 12!");
-    console.log("INFO: the available styles are:");
-    for (let [id, name] of styles) {
-        console.log(id + " -> " + name);
-    }
-    return;
-}
+// if (!styles.has(+argc._[1])) {
+//     console.error("Invalid style: expected a number between 1 and 12!");
+//     console.log("INFO: the available styles are:");
+//     for (let [id, name] of styles) {
+//         console.log(id + " -> " + name);
+//     }
+//     return;
+// }
 
-const quiet = argc.quiet;
-const inter = argc.inter;
-const final = !argc.nofinal;
+// const quiet = argc.quiet;
+// const inter = argc.inter;
+// const final = !argc.nofinal;
 
-(async () => {
-    let prompt = argc._[0];
-    let style = +argc._[1] || 3;
+module.exports = async function download(prompt, style, times, quiet, inter, final) {
+    style = style || 3;
     if (!quiet) console.log("Prompt: `" + prompt + "`, Style: `" + styles.get(style) + "`");
 
-    if (argc.times > 1) { // --times > 1
+    if (times > 1) { // --times > 1
         let promises = [];
         let states = [];
 
@@ -71,7 +70,7 @@ const final = !argc.nofinal;
             if (!quiet) console.log(n + ": " + data.state + " (" + current + "/" + max + ")");
         }
 
-        for (let n = 0; n < +argc.times; n++) {
+        for (let n = 0; n < times; n++) {
             promises.push(task(prompt, style, (data) => handler(data, n), {final, inter}));
 
             states.push("initializing");
@@ -123,5 +122,11 @@ const final = !argc.nofinal;
         }
         if (final) console.log(res.path);
         else console.log(res.url);
+        return {
+            path: res.path,
+            prompt: prompt
+        };
     }
-})();
+}
+
+//downloader("Sussy", 5, 1, false, false, true);
