@@ -2,7 +2,7 @@
 
 User inputs a 2d array of prompts and the collager composites the images together mirroring the 2d array submitted.
 
-Built upon [wombot](https://github.com/adri326/wombot), the unofficial API for [wombo.art](https://app.wombo.art/).
+Built upon [wombot](https://github.com/adri326/wombot#readme), the unofficial API for [wombo.art](https://app.wombo.art/).
 
 ## Installation
 
